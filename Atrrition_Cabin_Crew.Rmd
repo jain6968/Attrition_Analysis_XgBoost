@@ -1,0 +1,1613 @@
+---
+title: ''
+author: "Divya"
+date: "8 October 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(warn=-1)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Including Plots
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r}
+suppressPackageStartupMessages(library(googleVis))
+library("dplyr")
+library("tidyr")
+library("stringr")
+library("ggplot2")
+library("ggvis")
+library("googleVis")
+library(glmnet)
+#For maps
+library(leaflet)
+library(randomForest)
+library(rgdal)
+library(ISLR)
+library(ade4)
+library(MASS)
+library(class)
+library(reshape2)
+library(ROCR)
+library(e1071)
+library(GGally)
+library(leaps)
+#library(caret)
+library("RODBC")
+library(caret)
+library(h2o)        # Professional grade ML pkg
+library(lime)       # Explain complex black-box ML models
+library(tidyverse)
+library(RODBC)
+library(DBI)
+library(tidyquant)  # Loads tidyverse and several other pkgs 
+library(readxl)     # Super simple excel reader
+library(h2o)        # Professional grade ML pkg
+library(lime)       # Explain complex black-box ML models
+
+```
+
+
+```{r}
+
+alert_absent_count <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/alert_absent_count.csv")
+alert_assessment_count <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/alert_assessment_count.csv")
+alert_sickness_count <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/alert_sickness_count.csv")
+
+assessment_score <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/assessment_score.csv")
+
+behaviour_count_yearly<- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/behaviour_count_yearly.csv")
+
+caution_count_yearly <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/caution_count_yearly.csv")
+
+Crew_Master <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/Crew_Master.csv")
+
+grooming_yearly_count <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/grooming_yearly_count.csv")
+
+Kafou_count_total <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/Kafou_count_total.csv")
+
+LOC_count_yearly <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/LOC_count_yearly.csv")
+
+no_guest_accommodation <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/no_guest_accommodation.csv")
+
+
+no_of_training <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/no_of_training.csv")
+
+
+No_sickness_yearly <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/No_sickness_yearly.csv")
+
+promotion_in_last5years_count<-read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/promotion_in_last5years_count.csv")
+
+type_of_accommodation <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/type_of_accommodation.csv")
+
+warning_count_yearly <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/warning_count_yearly.csv")
+
+
+Total_Hours_Worked_yearly <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/Total_Hours_Worked_yearly.csv")
+
+no_exams_failed_yearly <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/no_exams_failed_yearly.csv")
+
+
+no_exams_passed_yearly <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/no_exams_passed_yearly.csv")
+
+
+no_online_request_Total <- read.csv("D://PRISM/Analytics/Attrition/Atrrition_factors_Data/no_online_request_Total.csv")
+
+```
+
+
+
+```{r}
+
+Crew_Master$STAFF_NUMBER <- as.integer(Crew_Master$STAFF_NUMBER)
+class(alert_absent_count$STAFF_NUMBER)
+Crew_Master1 <-  left_join(Crew_Master, alert_absent_count, by="STAFF_NUMBER")
+dim(Crew_Master1)
+
+```
+
+
+
+```{r}
+
+Crew_Master2 <-  left_join(Crew_Master1, alert_assessment_count, by="STAFF_NUMBER")
+dim(Crew_Master2)
+
+
+```
+
+```{r}
+
+Crew_Master3 <-  left_join(Crew_Master2, alert_sickness_count, by="STAFF_NUMBER")
+dim(Crew_Master3)
+```
+
+
+```{r}
+
+class(Crew_Master3$STAFF_NUMBER)
+assessment_score$STAFF_NUMBER <- as.integer(assessment_score$STAFF_NUMBER)
+
+Crew_Master4 <-  left_join(Crew_Master3, assessment_score, by="STAFF_NUMBER")
+dim(Crew_Master4)
+
+```
+
+```{r}
+
+Crew_Master5 <-  left_join(Crew_Master4, behaviour_count_yearly, by="STAFF_NUMBER")
+
+dim(Crew_Master5)
+
+```
+```{r}
+
+Crew_Master6 <-  left_join(Crew_Master5, caution_count_yearly, by="STAFF_NUMBER")
+
+dim(Crew_Master6)
+
+```
+```{r}
+
+grooming_yearly_count$STAFF_NUMBER <- as.integer(grooming_yearly_count$STAFF_NUMBER)
+Crew_Master7 <-  left_join(Crew_Master6, grooming_yearly_count , by="STAFF_NUMBER")
+
+dim(Crew_Master7)
+
+```
+
+
+```{r}
+
+Crew_Master8 <-  left_join(Crew_Master7, Kafou_count_total , by="STAFF_NUMBER")
+
+dim(Crew_Master8)
+
+```
+
+
+```{r}
+
+Crew_Master9 <-  left_join(Crew_Master8, LOC_count_yearly , by="STAFF_NUMBER")
+
+dim(Crew_Master9)
+
+```
+
+
+```{r}
+
+no_guest_accommodation$STAFF_NUMBER <- as.integer(no_guest_accommodation$STAFF_NUMBER)
+
+Crew_Master10 <-  left_join(Crew_Master9, no_guest_accommodation , by="STAFF_NUMBER")
+
+dim(Crew_Master10)
+
+```
+
+
+
+```{r}
+
+no_of_training$STAFF_NUMBER <- as.integer(no_of_training$STAFF_NUMBER)
+Crew_Master11 <-  left_join(Crew_Master10, no_of_training , by="STAFF_NUMBER")
+
+dim(Crew_Master11)
+
+```
+
+```{r}
+
+Crew_Master12 <-  left_join(Crew_Master11, No_sickness_yearly , by="STAFF_NUMBER")
+
+dim(Crew_Master12)
+
+```
+
+```{r}
+
+promotion_in_last5years_count$STAFF_NUMBER = as.integer(promotion_in_last5years_count$STAFF_NUMBER)
+Crew_Master13 <-  left_join(Crew_Master12, promotion_in_last5years_count , by="STAFF_NUMBER")
+
+dim(Crew_Master13)
+
+```
+
+```{r}
+
+Crew_Master15 <-  left_join(Crew_Master13, warning_count_yearly , by="STAFF_NUMBER")
+
+dim(Crew_Master15)
+
+```
+
+```{r}
+
+Total_Hours_Worked_yearly$STAFF_NUMBER <- as.integer(Total_Hours_Worked_yearly$STAFF_NUMBER)
+
+Crew_Master16 <-  left_join(Crew_Master15, Total_Hours_Worked_yearly , by="STAFF_NUMBER")
+
+dim(Crew_Master16)
+
+```
+
+```{r}
+
+
+no_exams_failed_yearly$STAFF_NUMBER <- as.integer(no_exams_failed_yearly$STAFF_NUMBER)
+
+Crew_Master17 <-  left_join(Crew_Master16, no_exams_failed_yearly , by="STAFF_NUMBER")
+
+dim(Crew_Master17)
+
+```
+
+
+
+
+```{r}
+
+no_exams_passed_yearly$STAFF_NUMBER <- as.integer(no_exams_passed_yearly$STAFF_NUMBER)
+
+Crew_Master18 <-  left_join(Crew_Master17, no_exams_passed_yearly , by="STAFF_NUMBER")
+
+dim(Crew_Master18)
+
+```
+
+
+
+```{r}
+
+no_online_request_Total$STAFF_NUMBER <- as.integer(no_online_request_Total$STAFF_NUMBER)
+
+Crew_Master19 <-  left_join(Crew_Master18, no_online_request_Total , by="STAFF_NUMBER")
+
+dim(Crew_Master19)
+
+```
+
+
+```{r}
+#4,6,13,14,15,20,
+
+Crew_Master20 <- Crew_Master19[,-c(4,6,13,14,15,20)]
+```
+
+
+
+```{r}
+summary(Crew_Master20)
+```
+
+
+
+```{r}
+
+Crew_Master20$Nationality <- gsub('ANGOLAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MYANMAR','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('PERU','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SINGAPOREAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('IRISH','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SWEDISH','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MOZAMBIQUE','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('VIETNAMESE','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SUDANESE','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('YEMENI','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('CAMBODIAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('KYRGYZSTAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('YUGOSLAVIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MOTSWANA','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MONGOLIA','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BRUNEIAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('NIGERIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('KAZAKH','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('TAIWANESE (ROC)','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('HONG KONG (CHINESE)','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MAURITIAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('VENEZUELAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MALAYSIAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ECUADORIAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('IVORIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('GEORGIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('GABONAISE','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('LEBANESE','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BAHRAINI','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('DOMINICAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('LUXEMBOURGEOISE','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('INDIAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('GREEK','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('TRINIDAD AND TOBAGO','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MOROCCAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MALTESE','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('GAMBIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SWAZI','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('RUSSIAN','RUSSIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('CYPRIOT','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('INDONESIAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('COSTARICAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('FIJIAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MALIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SALVADORAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('PAKISTANI','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SYRIAN','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('CHINESE','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('LAOS','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('TAJIKISTAN','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('IRANIAN','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('THAI','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ROMANIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('TANZANIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SLOVAK','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('CONGOLESE (REPUBLIC)','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ALGERIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('PALESTINIAN','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('FRENCH','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ERITRIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('PANAMANIAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('POLISH','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('KOSOVAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('JAMAICAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BOLIVIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SAINT LUCIAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SOUTH AFRICAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('NAMIBIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('CANADIAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('LIBYAN','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ARMENIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SERBIA','RUSSIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('CROATIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('KENYAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('AMERICAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('FINNISH','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('DUTCH','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BOSNIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SPANISH','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BRITISH','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SEYCHELLOIS','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ARGENTINIAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('NICARAGUAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MALDIVIAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('PORTUGUESE','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('UKRAINIAN','RUSSIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MEXICAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('COLOMBIAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('LATVIAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SOUTH KOREAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('GUATEMALIAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('TURKMEN','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('JAPANESE','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BANGLADESHI','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('HUNGARIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('GERMAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ZIMBABWEAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('CHINESE (PROC)','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('NEPALESE','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SWISS','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('CHILEAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('IRAQI','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('KOREAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('AUSTRIAN','AUSTRALIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('DANISH','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('GHANAIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BURMESE','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('RWANDAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('LESOTHO','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('NEW ZEALANDER','AUSTRALIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BELARUSIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('FILIPINO','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SIERRA LEONEAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ESTONIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('HONDURAS','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SRI LANKAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SLOVENIAN','RUSSIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('JORDANIAN','RUSSIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('PARAGUAYA','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('EGYPTIAN','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('AUSTRALIAN','AUSTRALIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('PAPUA NEW GUINEAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ICELAND','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SENEGALESE','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('AZERBAIJAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SERBIAN','RUSSIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('CZECH','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('URUGUAYAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ZAMBIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MACEDONIAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BARBADIAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ITALIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('CAMEROON','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MALAWIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BULGARIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('TUNISIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BELGIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SALVADO','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('TURKISH','MIDDLE EASTERN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('LITHUANIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ALBANIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BRAZILIAN','EUROPEAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('ETHIOPIAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MACAO (CHINESE)','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MOLDOVAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('BHUTAN','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('UZBEKISTAN','RUSSIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('UGANDAN','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('MONTENEGRO','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('SOMALI','AFRICAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('NEPALI','ASIAN',Crew_Master20$Nationality,fixed = TRUE)
+Crew_Master20$Nationality <- gsub('CUBAN','AMERICAN',Crew_Master20$Nationality,fixed = TRUE)
+
+
+```
+
+
+
+```{r}
+Crew_Master20$Date.Of.Birth <- as.Date(Crew_Master20$Date.Of.Birth,"%d/%m/%Y")
+Crew_Master20$Date.Of.Join <- as.Date(Crew_Master20$Date.Of.Join, "%d/%m/%Y")
+Crew_Master20$Crew.Last.Promotion.Date <- as.Date(Crew_Master20$Crew.Last.Promotion.Date,"%d/%m/%Y")
+#ummary(Crew_Master20$Date.Of.Join )
+#ummary(Crew_Master20$Date.Of.Birth )
+#summary(Crew_Master$Crew.Last.Promotion.Date)
+
+```
+
+
+```{r}
+Crew_Master20$Nationality<- as.factor(Crew_Master20$Nationality)
+
+Crew_Master20$Manager.Staffid <- as.integer(Crew_Master20$Manager.Staffid)
+
+Crew_Master20$Grade <- as.factor(Crew_Master20$Grade)
+```
+
+
+```{r}
+
+#Factorizing Nationality
+Crew_Master20$Nationality <- as.factor(Crew_Master20$Nationality)
+
+#Factorizing Gender and converting in 0 and 1 format for analysis with numerical values
+Crew_Master20$Gender <- gsub('Female','1',Crew_Master20$Gender,fixed = TRUE)
+Crew_Master20$Gender <- gsub('Male','0',Crew_Master20$Gender,fixed = TRUE)
+
+Crew_Master20$Gender <- as.factor(Crew_Master20$Gender)
+
+Crew_Master20$Manager.Staffid[is.na(Crew_Master20$Manager.Staffid)] <- 0
+Crew_Master20$Last.Promotion.Days[is.na(Crew_Master20$Last.Promotion.Days)] <- 0
+Crew_Master20$Last.Promotion.Months[is.na(Crew_Master20$Last.Promotion.Months)] <- 0
+Crew_Master20$Last.Promotion.Years[is.na(Crew_Master20$Last.Promotion.Years)] <- 0
+Crew_Master20$Date.Of.Join[is.na(Crew_Master20$Date.Of.Join)] <- "2014-12-21"
+Crew_Master20$Date.Of.Birth[is.na(Crew_Master20$Date.Of.Birth)] <- "1984-03-31"
+#Crew_Master20$Crew.Last.Promotion.Date[is.na(Crew_Master20$Crew.Last.Promotion.Date)] <- "19/07/2015"
+
+levels(Crew_Master20$Marital.Status)[levels(Crew_Master20$Marital.Status) == ""] <- "Single"
+
+
+```
+
+
+
+
+```{r}
+
+for(i in 15:32){
+Crew_Master20[,i][is.na(Crew_Master20[,i])] <- 0
+}
+
+```
+
+
+
+```{r}
+
+
+Crew_Master20  %>%
+  ggplot(aes(x = Status,y = NO_BEHAVIOUR_ISSUE, fill= Status)) +
+  geom_bar(stat='identity') +
+  
+  labs(x = 'Behavior Issue Count', 
+       y = 'Count', 
+       title = 'Status vs no. of Behavior Issue') +
+   coord_flip() +
+     theme_bw()
+
+```
+```{r}
+
+
+Crew_Master20  %>%
+   filter(Status=="Resigned") %>%
+  ggplot(aes(x = Manager.Staffid,y = Status, fill = Status)) +
+  geom_point() +
+  
+  labs(x = 'Manager Staff ID', 
+       y = 'Status', 
+       title = 'Manager Staff ID Vs Status') +
+   coord_flip() +
+     theme_bw()
+
+
+```
+
+
+
+
+```{r}
+
+Crew_Master20  %>%
+  ggplot(aes(x = Nationality,y = Status, fill = Status)) +
+  geom_bar(stat = "Identity") +
+  
+  labs(x = 'Nationality', 
+       y = 'Status', 
+       title = 'Nationality Vs Status') +
+   coord_flip() +
+     theme_bw()
+```
+
+```{r}
+
+Crew_Master20 %>%
+  filter(Status=="Resigned") %>%
+  ggplot(aes(x = Date.Of.Join,y = Last.Promotion.Years)) +
+  geom_line()+
+  labs(x = 'Date.Of.Join', 
+       y = 'Last.Promotion.Years', 
+       title = 'Date.Of.Join Vs Last.Promotion.Years for Resigned ') +
+       theme_bw()
+
+Crew_Master20  %>%
+  filter(Status=="Terminated") %>%
+  ggplot(aes(x = Date.Of.Join,y = Last.Promotion.Years)) +
+  geom_line()+
+  labs(x = 'Date.Of.Join', 
+       y = 'Last.Promotion.Years', 
+       title = 'Date.Of.Join Vs Last.Promotion.Years for terminated staff') +
+       theme_bw()
+
+
+Crew_Master20  %>%
+  filter(Status=="Active") %>%
+  ggplot(aes(x = Date.Of.Join,y = Last.Promotion.Years)) +
+  geom_line()+
+  labs(x = 'Date.Of.Join', 
+       y = 'Last.Promotion.Years', 
+       title = 'Date.Of.Join Vs Last.Promotion.Years for Active staff') +
+       theme_bw()
+
+
+Crew_Master20  %>%
+  #filter(Status=="Terminated") %>%
+  ggplot(aes(x = Status,y = NO_GROOMING_ISSUE_YEARLY)) +
+  geom_line()+
+  labs(x = 'Status', 
+       y = 'NO_GROOMING_ISSUE_YEARLY', 
+       title = 'Status Vs NO_GROOMING_ISSUE_YEARLY for all staff') +
+       theme_bw()
+
+
+Crew_Master20$Manager.Staffid <- as.integer(Crew_Master20$Manager.Staffid)
+Crew_Master20  %>%
+#  filter(Status=="Resigned" || Status=="Terminated") %>%
+  ggplot(aes(x = Manager.Staffid,y = Status)) +
+  geom_point()+
+  labs(x = 'Status', 
+       y = 'NO_GROOMING_ISSUE_YEARLY', 
+       title = 'Status Vs NO_GROOMING_ISSUE_YEARLY for all staff') +
+       theme_bw()
+
+```
+
+
+```{r}
+h2o.init()
+
+```
+
+```{r}
+h2o.no_progress() # To turn off output of progress bars
+```
+
+```{r}
+#Load data into H2O data frame format
+hr_data_h2o <- as.h2o(Crew_Master20)
+```
+
+```{r}
+
+split_h2o <- h2o.splitFrame(hr_data_h2o, c(0.7, 0.15), seed = 1234 )
+train_h2o <- h2o.assign(split_h2o[[1]], "train" ) # 70%
+valid_h2o <- h2o.assign(split_h2o[[2]], "valid" ) # 15%
+test_h2o  <- h2o.assign(split_h2o[[3]], "test" )  # 15%
+
+```
+
+```{r}
+
+colnames(hr_data_h2o)
+
+```
+
+
+```{r}
+
+y <- "Crew.Last.Promotion.Date"
+
+x <- setdiff(names(train_h2o), y)
+
+```
+
+```{r}
+# Running the automated machine learning 
+automl_models_h2o <- h2o.automl(
+    x = x, 
+    y = y,
+    training_frame    = train_h2o,
+    leaderboard_frame = valid_h2o,
+    max_runtime_secs  = 300
+    )
+```
+
+
+```{r}
+automl_leader <- automl_models_h2o@leader
+automl_leader
+```
+
+
+
+
+```{r}
+pred_h2o <- h2o.predict(object = automl_leader, newdata = test_h2o)
+```
+
+```{r}
+test_performance <- test_h2o %>%
+    tibble::as_tibble() %>%
+    add_column(pred = as.vector(pred_h2o$predict)) %>%
+    mutate_if(is.character, as.factor)
+test_performance
+
+```
+
+```{r}
+
+
+#This shows how many cases are predicted correctly and incorrectly
+#As seen Total Resigned 1234 are correctly identified 
+#As seen Total 108 Terminated cases are rightly identified
+# The problem here is false negative cases which is Active also identified as terminated and resigned.
+confusion_matrix <- test_performance[,c(11,33)] %>%
+    table() 
+confusion_matrix
+```
+
+```{r}
+# Performance analysis
+tn <- confusion_matrix[1]
+tp <- confusion_matrix[4]
+fp <- confusion_matrix[3]
+fn <- confusion_matrix[2]
+
+accuracy <- (tp + tn) / (tp + tn + fp + fn)
+misclassification_rate <- 1 - accuracy
+recall <- tp / (tp + fn)
+precision <- tp / (tp + fp)
+null_error_rate <- tn / (tp + tn + fp + fn)
+
+tibble(
+    accuracy,
+    misclassification_rate,
+    recall,
+    precision,
+    null_error_rate
+) %>% 
+    transpose() 
+
+# The performance of this algorithm is 67% and missclassifcation rate is 32%
+
+```
+
+
+
+```{r}
+class(automl_leader)
+```
+
+
+
+```{r}
+# Setup lime::model_type() function for h2o
+model_type.H2OBinomialModel <- function(x, ...) {
+    # Function tells lime() what model type we are dealing with
+    # 'classification', 'regression', 'survival', 'clustering', 'multilabel', etc
+    #
+    # x is our h2o model
+    
+    return("classification")
+}
+```
+
+
+
+```{r}
+# Setup lime::predict_model() function for h2o
+predict_model.H2OBinomialModel <- function(x, newdata, type, ...) {
+    # Function performs prediction and returns dataframe with Response
+    #
+    # x is h2o model
+    # newdata is data frame
+    # type is only setup for data frame
+    
+    pred <- h2o.predict(x, as.h2o(newdata))
+    
+    # return probs
+    return(as.data.frame(pred[,-11]))
+    
+}
+```
+
+
+```{r}
+lime_test_dat <- test_h2o[test_h2o$Status == 'Resigned',]
+  
+predict_model(x = automl_leader, newdata = as.data.frame(lime_test_dat[,-11]), type = 'raw') %>%
+    tibble::as_tibble()
+
+```
+
+
+
+```{r}
+explainer <- lime::lime(
+    as.data.frame(lime_test_dat[,-5]), 
+    model          = automl_leader, 
+    bin_continuous = FALSE)
+```
+
+
+```{r}
+explanation <- lime::explain(
+    as.data.frame(lime_test_dat[50:80,-5]), 
+    explainer    = explainer, 
+    n_labels     = 1, 
+    n_features   = 5,
+    kernel_width = 1)
+```
+
+```{r}
+plot_features(explanation, ncol=2) + theme(text=element_text(face="bold", size=12),legend.spacing.y=unit(.25, "cm"))+
+    labs(title = "Atrrition Analytics: LIME Feature Importance Visualization",
+         subtitle = "Hold Out (Test) Set, 30 Cases Shown") 
+```
+
+```{r}
+
+plot_explanations(explanation)
+
+```
+
+
+```{r}
+#SO from the above H2O data analysis,its found that features which are of high weightage contributing to Resignation are 
+
+#NO_CAUTION_COUNT_YEARLY high
+#NO_GROOMING_ISSUE_YEARLY high
+#ASSSESSMENT_COUNT_ALERT high
+
+#Likewise Factors contributiing to maintain active employees are 
+# Promotions received and if employee receives sickness alert, which can mean that employees who take sickness leave for long time will remain active as company had provision to take long term sick leave.
+head(explanation)
+dim(explanation)
+```
+
+
+```{r}
+attrition_critical_features <- Crew_Master20 %>%
+    tibble::as_tibble() %>%
+    select(Date.Of.Join, Grade, Last.Promotion.Years, MAX_TOTAL_SCORE) %>%
+    rowid_to_column(var = "Case")
+attrition_critical_features
+```
+
+
+
+
+
+```{r}
+library(randomForest)
+
+#train_Dat <- droplevels(Crew_Master20[Crew_Master20$Status!="Active",])
+train_Dat <- Crew_Master20
+bTrain <- sample(rep(c(TRUE,FALSE),length.out=nrow(train_Dat)/0.8))
+
+train_Dat1 <- train_Dat[bTrain,]
+test_Dat1 <- train_Dat[!bTrain,]
+train_Dat1 <- na.omit(train_Dat1)
+test_Dat1 <- na.omit(test_Dat1)
+
+
+
+```
+
+
+
+```{r}
+var <- c(1:4,6:32)
+var2 <- c(50,100,150,300)
+mtry1 <- c(4,8,10,16)
+for(i in 1:4)
+{
+tune.rf <- tuneRF(train_Dat1[,var],train_Dat1[,5], stepFactor=0.5, ntree = var2[i], mtryStart=mtry1[i])
+}
+```
+
+
+
+```{r}
+random_fit <- randomForest(Status~.,data = train_Dat1, mtry = 6, ntree =150)
+attn_predict<-predict(random_fit,newdata=test_Dat1[,-5])
+varImpPlot(random_fit)
+```
+
+
+```{r}
+random_fit$confusion
+```
+
+
+
+```{r}
+prediected_dat <- as.data.frame(attn_predict)
+prediected_dat$test_dat_status <- test_Dat1$Status
+prediected_dat$staff_Number <- test_Dat1$STAFF_NUMBER
+```
+
+```{r}
+prediected_dat
+
+confusion_matrix <- prediected_dat[,c(1,2)] %>%
+    table() 
+confusion_matrix
+```
+
+
+
+```{r}
+
+prediected_dat$attn_predict <- as.factor(prediected_dat$attn_predict)
+prediected_dat$test_dat_status <- as.factor(prediected_dat$test_dat_status)
+prediected_dat$staff_Number <- as.character(prediected_dat$staff_Number)
+write.csv(prediected_dat,"D://PRISM/Analytics/Attrition/Atrrition_factors_Data/predicted_dat.csv")
+con <- DBI::dbConnect(odbc::odbc(),
+                         Driver    = "SQL Server", 
+                         Server    = "SWDOHD2TPRM0001",
+                         Database  = "PRISM_TEST",
+                         UID       = "prism_user",
+                         PWD       = "prismusr",
+                         Port      = 1433)
+
+dbWriteTable(con, "predicted_10Sep_attrition_dat", prediected_dat, overwrite = TRUE)
+#dbWriteTable(con, "Crew_Master_data_For_analysis",Crew_Master20, overwrite = TRUE)
+
+dbDisconnect(con)
+
+```
+
+
+
+```{r}
+
+#Applying gradient boosting algorithm, very commanly used for winning kaggle competitions 
+library(caret)
+x_train <- train_Dat1[,-5]
+y_train <- train_Dat1[,5]
+
+x_test <- test_Dat1[,-5]
+y_test <- test_Dat1[,5]
+
+
+
+```
+
+```{r}
+
+#Applied linear XgBoost
+TrainControl <- trainControl( method = "optimism_boot", number = 10, repeats = 4)
+xgBoost_fit<- train(y_train ~ ., data = x_train, method = "xgbTree", trControl = TrainControl,verbose = FALSE)
+
+```
+
+
+```{r}
+colnames(x_train)
+```
+
+
+```{r}
+
+predicted_linear_xgboost <- predict(model, x_test)
+#predicted_ntree_xgboost <- predict(model, x_test)
+
+prediected_dat <- as.data.frame(predicted_linear_xgboost)
+prediected_dat$test_dat_status <- test_Dat1$Status
+prediected_dat$staff_Number <- test_Dat1$STAFF_NUMBER
+
+confusion_matrix <- prediected_dat[,c(1,2)] %>%
+    table() 
+confusion_matrix
+
+```
+
+
+
+```{r}
+#Applied Tree based classification Xgboost
+TrainControl <- trainControl( method = "repeatedcv", number = 2, repeats = 2)
+model_xgboost_tree<- train(y_train ~ ., data = x_train, method = "xgbTree", trControl = TrainControl,verbose = FALSE)
+
+predicted_ntree_xgboost <- predict(model_xgboost_tree, x_test)
+
+prediected_dat_tree <- as.data.frame(predicted_ntree_xgboost)
+prediected_dat_tree$test_dat_status <- test_Dat1$Status
+prediected_dat_tree$staff_Number <- test_Dat1$STAFF_NUMBER
+
+confusion_matrix <- prediected_dat_tree[,c(1,2)] %>%
+    table() 
+confusion_matrix
+```
+
+
+```{r}
+#SVM technique applied 
+library(e1071)
+tuned_parameters <- tune.svm(Status~., data = train_Dat2, gamma =c(0.01,0.1), cost =c(1,5,10))
+svm_fit <-svm(y_train ~ ., data = train_Dat1, kernel = "radial", gamma = 0.1, cost = 1)
+summary(svm_fit)
+
+predicted= predict(svm_fit,test_Dat1)
+prediected_svm <- as.data.frame(predicted)
+#prediected_svm$predicted <- as.data.frame(predicted)
+prediected_svm$test_dat_status <- test_Dat1$Status
+prediected_svm$staff_Number <- test_Dat1$STAFF_NUMBER
+
+confusion_matrix <- prediected_svm[,c(1,2)] %>%
+    table() 
+confusion_matrix
+
+pred <- fitted(svm_fit)
+table(pred, y_train)
+
+attr(pred, "decision.values")[1:4,]
+
+plot(cmdscale(dist(Crew_Master20[,-5])),
+     col = as.factor(Crew_Master20[,5]),
+     pch = c("o","+")[1:150 %in% svm_fit$index + 1])
+
+
+train_Dat2 = train_Dat1[,-c(30,31)]
+#Applying SVM to get the verification again against random forest and H20
+
+
+```
+
+
+
+```{r}
+summary(Crew_Master20$Crew.Last.Promotion.Date)
+
+Crew_Master21 <- Crew_Master20
+
+```
+
+
+#Crew progression prediction 
+```{r}
+
+for(i in 1:34937)
+{
+  if(is.na(Crew_Master21[i,11])){
+    Crew_Master21[i,11] <- Crew_Master21[i,7]
+  }
+}
+
+summary(Crew_Master21[,11])
+```
+`
+```{r}
+
+summary(Crew_Master21$STAFF_NUMBER)
+
+```
+
+
+```{r}
+
+
+Crew_Master21  %>%
+  #filter(Status=="Terminated") %>%
+  ggplot(aes(x = Crew.Last.Promotion.Date,y = STAFF_NUMBER)) +
+  geom_line()+
+  geom_line(col = palette_light()[1]) +
+    geom_point(col = palette_light()[1]) +
+  labs(title = "Promotion Vs Staff Number")
+
+```
+
+
+```{r}
+
+
+Crew_Master21  %>%
+  #filter(Status=="Terminated") %>%
+  ggplot(aes(x = Grade, y = Crew.Last.Promotion.Date)) +
+  geom_line()+
+  geom_line(col = palette_light()[1]) +
+    geom_point(col = palette_light()[1]) +
+  labs(title = "Promotion Vs Grader")
+
+```
+
+```{r}
+#Roster data Analysis
+#roster_dat  <- read.csv("D://PRISM/Attendance/Analytics/Roster_Oct_18.csv",header = TRUE, sep = "\t")
+
+roster_dat_2017  <- read.csv("D://PRISM/Attendance/Analytics/2017_leaves_roster.csv",header = TRUE, sep = ",")
+
+roster_dat_2016  <- read.csv("D://PRISM/Attendance/Analytics/2016_leaves_roster.csv",header = TRUE, sep = ",")
+
+roster_dat_2018  <- read.csv("D://PRISM/Attendance/Analytics/2018_leaves_roster.csv",header = TRUE, sep = ",")
+
+```
+
+```{r}
+
+
+roster_dat_2017 <- roster_dat_2017[,-1]
+roster_dat_2016 <- roster_dat_2016[,-1]
+roster_dat_2018 <- roster_dat_2018[,-1]
+colnames(roster_dat_2017)
+colnames(roster_dat_2018)
+colnames(roster_dat_2016)
+
+
+
+```
+
+
+```{r}
+new_dat1 <- rbind(roster_dat_2017,roster_dat_2016)
+new_dat2 <- rbind(new_dat1,roster_dat_2018)
+```
+
+
+
+```{r}
+roster_dat <- new_dat2
+```
+
+
+
+
+```{r}
+
+#Grouping into sick leave
+roster_dat$DUTYCODE = gsub('SLVE','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SKLT','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SRPT','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SOCO','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('S2H','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SICK','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('S2HM','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SOCM','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SRPM','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SOD','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SOB','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SCDR','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('FTG','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('INJD','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('MEDF','SICK',roster_dat$DUTYCODE,fixed = TRUE)
+#Grouping for EXAM and TEST type
+roster_dat$DUTYCODE = gsub('LST','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('PAT','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('GIE','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ELT5','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ELT4','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ELT3','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ELT','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SFE','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('TPSR','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('TRIT','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('TRET','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('QES','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('DGFR','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ESL1','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('EXAM','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('MFIT','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('LCAL','EXAM',roster_dat$DUTYCODE,fixed = TRUE)
+
+#Grouping for OFF and off day
+roster_dat$DUTYCODE = gsub('MOFF','OFF',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('OFFX','OFF',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('OFF','OFF',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('GOFF','OFF',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('WOFF','OFF',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ROFF','OFF',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('DOFF','OFF',roster_dat$DUTYCODE,fixed = TRUE)
+
+
+#Grouping for Leave days
+roster_dat$DUTYCODE = gsub('CLVE','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SLVE','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ULV','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('OFLD','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('NOAV','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('STDN','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('NCTC','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('NOSW','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('NCT1','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('NCT1','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('TLVE','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ABLV','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('BLVE','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('LVSP','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('UPLV','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('LVE','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('MOFC','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('MULV','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('RLVE','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('MOFC','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('MLVE','LEAVE',roster_dat$DUTYCODE,fixed = TRUE)
+
+
+roster_dat$DUTYCODE = gsub('TLVE','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('LOFT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ICAT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('IRP','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('INDI','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('LPTR','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('OPTR','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('7DR','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('DOOR','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('TRNG','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('LFLB','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('INCP','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('LOWI','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('38DR','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SAHS','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('MCCI','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('MCC','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('REC7','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('POLA','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SEC','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ICRM','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('TAXI','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('HLDG','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('UAT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('RNPR','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('HLDG','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SZFT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SEZS','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('AST','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('GTRI','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('TMTG','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ITRT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('CBTI','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+
+roster_dat$DUTYCODE = gsub('SRT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('AFTD','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ATDI','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('TTTC','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('35DR','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('EBT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('QSIM','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('RDNT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SNAS','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('UPRT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ECRM','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SEP5','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('WST1','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ISEC','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('BSBY','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('KBSM','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+
+roster_dat$DUTYCODE = gsub('IBSY','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SJJS','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('SJJS','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('QRWT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('QRWT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('DGFR','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('LSC','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('FBT2','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+
+roster_dat$DUTYCODE = gsub('FBS','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('TRAN','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('KSIM','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('CBT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('FBT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('GRND','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('FTDI','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('LPC','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('FBT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('NGT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('GTCI','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('GTCT','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('CRM','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('RECR','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('ART','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+roster_dat$DUTYCODE = gsub('FRTG','TRAIN',roster_dat$DUTYCODE,fixed = TRUE)
+
+roster_dat$DUTYCODE = gsub('GRMP','WORK',roster_dat$DUTYCODE,fixed = TRUE)
+
+
+```
+
+
+
+```{r}
+subset_df <- roster_dat %>%
+filter(DUTYCODE =="LEAVE" | DUTYCODE =="TRAIN" | DUTYCODE =="EXAM" | DUTYCODE == "SICK" | DUTYCODE == "OFF")
+```
+
+
+```{r}
+roster_dat$DUTYCODE  <- as.factor(roster_dat$DUTYCODE)
+subset_df$DUTYCODE <-  as.factor(subset_df$DUTYCODE)
+normal_df <- anti_join(x = roster_dat, y = subset_df)
+```
+
+
+```{r}
+normal_df[,2] <- "TRAIN"
+normal_df$DUTYCODE <- as.factor(normal_df$DUTYCODE)
+summary(normal_df$DUTYCODE)
+roster_final_dat <- rbind(subset_df,normal_df)   
+#roster_final_dat <- roster_dat
+#summary(roster_final_dat)
+```
+
+
+```{r}
+roster_final_dat$DUTYCODE <- as.factor(roster_final_dat$DUTYCODE)
+roster_final_dat <- roster_final_dat[,-3]
+roster_final_dat$STAFF_NUMBER <- as.integer(roster_final_dat$STAFF_NUMBER)
+roster_final_dat$DUTYDATE <- as.Date(roster_final_dat$DUTYDATE,"%d/%m/%Y")
+```
+
+```{r}
+#View(roster_final_dat)
+```
+
+
+```{r}
+
+#Adding month column 
+roster_final_dat_m <- roster_final_dat %>%
+  mutate(month = month(DUTYDATE))
+
+roster_final_dat_m_1 <- roster_final_dat_m %>%
+  mutate(YEAR = year(DUTYDATE))
+
+```
+
+```{r}
+summary(roster_final_dat_m_1)
+```
+
+
+
+
+```{r}
+#What is the total number of sick leaves in a year
+plot_dat1 <-  roster_final_dat_m_1 %>%
+  filter(DUTYCODE == "SICK") %>%
+   group_by(YEAR) %>%
+   summarise(Count = n()) %>%
+   arrange(desc(Count)) 
+
+plot_dat1  %>%
+  ggplot(aes(x = YEAR,y = Count, fill= YEAR)) +
+  geom_bar(stat='identity') +
+  labs(x = 'Year', 
+       y = 'Count', 
+       title = 'Sick leave year wise') +
+   coord_flip() +
+     theme_bw()
+
+
+```
+
+```{r}
+
+
+#Pattern of sick leave month wise all three years
+
+#For year 2018
+plot_dat2 <-  roster_final_dat_m_1 %>%
+  filter(YEAR =="2018" & DUTYCODE !="WORK" & DUTYCODE !="OFF" & DUTYCODE !="LEAVE") %>%
+  filter() %>%
+   group_by(month,DUTYCODE) %>%
+   summarise(Count = n()) %>%
+   arrange(desc(Count)) 
+
+plot_dat2  %>%
+  ggplot(aes(x = DUTYCODE,y = Count, fill= month)) +
+  geom_bar(stat='identity') +
+  labs(x = 'Year', 
+       y = 'Count', 
+       title = 'Leave Pattern month wise in 2018 and') +
+   coord_flip() +
+     theme_bw()
+
+#For Year 2017
+plot_dat3 <-  roster_final_dat_m_1 %>%
+  filter(YEAR =="2017" & DUTYCODE !="WORK" & DUTYCODE !="OFF" & DUTYCODE !="LEAVE") %>%
+  filter() %>%
+   group_by(month,DUTYCODE) %>%
+   summarise(Count = n()) %>%
+   arrange(desc(Count)) 
+
+plot_dat3  %>%
+  ggplot(aes(x = DUTYCODE,y = Count, fill= month)) +
+  geom_bar(stat='identity') +
+  labs(x = 'Year', 
+       y = 'Count', 
+       title = 'Leave Pattern year and month wise') +
+   coord_flip() +
+     theme_bw()
+
+#For Year 2016
+plot_dat4 <-  roster_final_dat_m_1 %>%
+  filter(YEAR =="2016" & DUTYCODE !="WORK" & DUTYCODE !="OFF" & DUTYCODE !="LEAVE") %>%
+  filter() %>%
+   group_by(month,DUTYCODE) %>%
+   summarise(Count = n()) %>%
+   arrange(desc(Count)) 
+
+plot_dat4  %>%
+  ggplot(aes(x = DUTYCODE,y = Count, fill= month)) +
+  geom_bar(stat='identity') +
+  labs(x = 'Year', 
+       y = 'Count', 
+       title = 'Leave Pattern year and month wise') +
+   coord_flip() +
+     theme_bw()
+
+
+```
+
+
+```{r}
+# Pattern of sick leave for few staff over 3 years month wise, count of leaves per month 
+#15204
+#10684
+#15087
+#14780
+#8312
+#7206
+#10076
+var  <- c(15204,10684, 15087,14780,8312,7206,10076)
+for(i in 1:7){
+  
+plot_dat6<-  roster_final_dat_m_1 %>%
+  filter(DUTYCODE =="SICK" & STAFF_NUMBER== var[i]) %>%
+   group_by(YEAR,month) %>%
+   summarise(Count = n()) %>%
+   arrange(desc(Count)) 
+
+print(plot_dat6  %>%
+  ggplot(aes(x = month ,y = Count, fill= YEAR)) +
+  geom_bar(stat='identity') +
+  labs(x = 'Year', 
+       y = 'Count',
+       title = 'Sick leave year wise') +
+   coord_flip() +
+     theme_bw())
+}
+
+
+```
+
+```{r}
+
+grouped_data <-  roster_final_dat_m_1 %>%
+   group_by(STAFF_NUMBER,DUTYCODE,DUTYDATE,YEAR,month) %>%
+   summarise(Count = n()) %>%
+   arrange(desc(Count)) 
+
+```
+
+```{r}
+
+#View(grouped_data)
+dim(grouped_data)
+grouped_data_non_na <- na.omit(grouped_data)
+dim(grouped_data)
+
+```
+
+
+```{r}
+#Converting the categorical variables with hot encoding.
+sickness_dat <- na.omit(roster_final_dat_m_1)
+for(unique_value in unique(sickness_dat$DUTYCODE)){
+sickness_dat[paste("DutyCode", unique_value, sep = ".")] <- ifelse(sickness_dat$DUTYCODE == unique_value, 1, 0)
+}
+head(sickness_dat)
+summary(sickness_dat)
+
+```
+
+
+```{r}
+colnames(sickness_dat)
+sickness_dat_new <- sickness_dat[,-2]
+summary(sickness_dat_new)
+```
+
+
+```{r}
+
+#Creating training and test data.
+
+#Taking 2016 and 2017 data in train model and 2018 data in test model.
+
+train_Dat = sickness_dat_new %>%
+   filter(YEAR == 2016 | YEAR ==2017)
+
+test_Dat  = sickness_dat_new %>%
+   filter(YEAR == 2018) 
+
+summary(train_Dat)
+dim(train_Dat)
+summary(test_Dat)
+dim(test_Dat)
+  
+```
+
+
+```{r}
+colnames(train_Dat)
+```
+
+
+```{r}
+
+library("xgboost")
+library("drat")
+
+#Converting data into dgMatrix
+dtrain <- sparse.model.matrix(DutyCode.SICK ~ ., data = train_Dat)[,-7]
+output_vector = train_Dat[,7]
+
+dtest <- sparse.model.matrix(DutyCode.SICK ~ ., data = test_Dat)[,-7]
+test_output_vector = test_Dat[,7]
+```
+
+```{r}
+
+
+bst <- xgboost(data = dtrain, label = output_vector, max_depth = 20,
+               eta = 2, nthread = 2, nrounds = 25,objective = "binary:logistic")
+```
+
+```{r}
+importance <- xgb.importance(feature_names = colnames(dtrain), model = bst)
+
+```
+
+
+```{r}
+xgb.plot.importance(importance_matrix = importance)
+```
+
+
+```{r}
+
+predicted <- predict(bst, dtest)
+#View(predicted)
+```
+
+```{r}
+predicted <- as.data.frame(predicted)
+test_output_vector <- as.data.frame(test_output_vector)
+```
+
+
+```{r}
+
+for(i in 1: dim(predicted)[1])
+{
+  if(predicted[i,1]<0.5)
+  {
+    predicted[i,1] = 0
+  }
+  else{
+    predicted[i,1] = 1
+  }
+}
+
+
+
+```
+
+
+```{r}
+new <-  cbind(test_output_vector,predicted)
+
+```
+
+
+```{r}
+
+confusion_matrix <- new[,c(1,2)] %>%
+    table() 
+confusion_matrix
+
+#8% error only predictng the sick leave for test data of 2018
+
+```
+
+
+```{r}
+output_file <-  test_Dat
+
+output_file["predicted_sick"]<- predicted
+```
+
+```{r}
+#Correct predicted cases are
+#285500 (Not as Sick) + 6643 (as Sick) - 92%
+#316611 (Overall cases)  - 100%
+# 17569 - Not predicted - 5%
+
+write.csv(output_file,"D://PRISM/Attendance/Analytics/output_predicted.csv")
+```
+
+
+
+```{r}
+#Trying to implement Arima model for Sick prediction 
+
+
+```
+
+```{r}
+#Applying ARIMA modelling on the data.
+
+#1. Step 1 will be to format the data to get the sick leave count for each date wise from 2002 until 2018.
+#2. Step 2 will be to plot the data and 
+
+
+
+#tsData = ts(sickness_dat_new, start = c(2016,1), frequency = 12)
+
+write.csv(sickness_dat_new,"D://PRISM/Attendance/Analytics/Raw_Dat_for_Analysis.csv")
+
+```
+
+```{r}
+con <- DBI::dbConnect(odbc::odbc(),
+                         Driver    = "SQL Server", 
+                         Server    = "SWDOHD2TPRM0001",
+                         Database  = "PRISM_TEST",
+                         UID       = "prism_user",
+                         PWD       = "prismusr",
+                         Port      = 1433)
+
+dbWriteTable(con, "Raw_Data_SickLeave", sickness_dat_new, overwrite = TRUE)
+
+```
+
